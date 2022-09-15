@@ -23,10 +23,10 @@
 * IN THE SOFTWARE.
 */
 
-#include "bme280.h"
+#include "bmp3.h"
 
-/* BME-280 on Wire at the primary I2C address */
-bfs::Bme280 bme(&Wire, bfs::Bme280::I2C_ADDR_PRIM);
+/* BMP-3xy on I2C using the primary address */
+bfs::Bmp3 bmp(&Wire, bfs::Bmp3::I2C_ADDR_PRIM);
 
 void setup() {
   /* Serial monitor for showing status and data */
@@ -35,20 +35,18 @@ void setup() {
   /* Initialize the I2C bus */
   Wire.begin();
   Wire.setClock(400000);
-  /* Initialize the BME-280 */
-  if (!bme.Begin()) {
-    Serial.println("Error initializing communication with BME-280");
+  /* Initialize the BMP-3xy */
+  if (!bmp.Begin()) {
+    Serial.println("Error initializing communication with BMP-3xy");
     while (1) {}
   }
 }
 
 void loop() {
-  if (bme.Read()) {
-    Serial.print(bme.pres_pa());
+  if (bmp.Read()) {
+    Serial.print(bmp.pres_pa());
     Serial.print("\t");
-    Serial.print(bme.die_temp_c());
-    Serial.print("\t");
-    Serial.println(bme.humidity_rh());
+    Serial.print(bmp.die_temp_c());
+    Serial.print("\n");
   }
-  delay(100);
 }

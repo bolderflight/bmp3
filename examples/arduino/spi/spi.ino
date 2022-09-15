@@ -23,10 +23,10 @@
 * IN THE SOFTWARE.
 */
 
-#include "bme280.h"
+#include "bmp3.h"
 
-/* BME-280 on SPI using CS pin 10 */
-bfs::Bme280 bme(&SPI, 10);
+/* BMP-3xy on SPI using CS pin 10 */
+bfs::Bmp3 bmp(&SPI, 10);
 
 void setup() {
   /* Serial monitor for showing status and data */
@@ -34,20 +34,18 @@ void setup() {
   while (!Serial) {}
   /* Initialize the SPI bus */
   SPI.begin();
-  /* Initialize the BME-280 */
-  if (!bme.Begin()) {
-    Serial.println("Error initializing communication with BME-280");
+  /* Initialize the BMP-3xy */
+  if (!bmp.Begin()) {
+    Serial.println("Error initializing communication with BMP-3xy");
     while (1) {}
   }
 }
 
 void loop() {
-  if (bme.Read()) {
-    Serial.print(bme.pres_pa());
+  if (bmp.Read()) {
+    Serial.print(bmp.pres_pa());
     Serial.print("\t");
-    Serial.print(bme.die_temp_c());
-    Serial.print("\t");
-    Serial.println(bme.humidity_rh());
+    Serial.print(bmp.die_temp_c());
+    Serial.print("\n");
   }
-  delay(100);
 }

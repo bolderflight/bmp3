@@ -31,8 +31,8 @@
 #else
 #include "core/core.h"
 #endif
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 namespace bfs {
 
@@ -59,110 +59,131 @@ Bmp3::Bmp3(SPIClass *spi, const uint8_t cs) {
 
 bool Bmp3::Begin() {
   /* Initialize communication */
-  if (bmp3_init(&dev_) != BMP3_OK) {
+  err_ = bmp3_init(&dev_);
+  if (err_ != BMP3_OK) {
     return false;
   }
   /* Set defaults */
-  req_set_.press_en = BMP3_ENABLE;
-  req_set_.temp_en = BMP3_ENABLE;
-  req_set_.odr_filter.press_os = BMP3_OVERSAMPLING_8X;
-  req_set_.odr_filter.temp_os =BMP3_NO_OVERSAMPLING;
-  req_set_.odr_filter.odr = BMP3_ODR_50_HZ;
-  req_set_.odr_filter.iir_filter = BMP3_IIR_FILTER_COEFF_1;
-  req_set_.int_settings.drdy_en = BMP3_ENABLE;
-  req_set_.int_settings.latch = BMP3_INT_PIN_NON_LATCH;
-  req_set_.int_settings.level = BMP3_INT_PIN_ACTIVE_HIGH;
-  req_set_.int_settings.output_mode = BMP3_INT_PIN_PUSH_PULL;
-  set_sel_ = BMP3_SEL_PRESS_EN | BMP3_SEL_TEMP_EN | BMP3_SEL_PRESS_OS |
-             BMP3_SEL_TEMP_OS | BMP3_SEL_IIR_FILTER | BMP3_SEL_ODR |
-             BMP3_SEL_OUTPUT_MODE | BMP3_SEL_LEVEL | BMP3_SEL_LATCH |
-             BMP3_SEL_DRDY_EN;
-  if (bmp3_set_sensor_settings(set_sel_, &req_set_, &dev_) != BMP3_OK) {
+  req_settings_.press_en = BMP3_ENABLE;
+  req_settings_.temp_en = BMP3_ENABLE;
+  req_settings_.odr_filter.press_os = BMP3_OVERSAMPLING_8X;
+  req_settings_.odr_filter.temp_os = BMP3_NO_OVERSAMPLING;
+  req_settings_.odr_filter.odr = BMP3_ODR_50_HZ;
+  req_settings_.odr_filter.iir_filter = BMP3_IIR_FILTER_COEFF_2;
+  req_settings_.int_settings.drdy_en = BMP3_ENABLE;
+  req_settings_.int_settings.latch = BMP3_INT_PIN_NON_LATCH;
+  req_settings_.int_settings.level = BMP3_INT_PIN_ACTIVE_HIGH;
+  req_settings_.int_settings.output_mode = BMP3_INT_PIN_PUSH_PULL;
+  settings_select_ = BMP3_SEL_PRESS_EN | BMP3_SEL_TEMP_EN | BMP3_SEL_PRESS_OS |
+                     BMP3_SEL_TEMP_OS | BMP3_SEL_IIR_FILTER | BMP3_SEL_ODR |
+                     BMP3_SEL_OUTPUT_MODE | BMP3_SEL_LEVEL | BMP3_SEL_LATCH |
+                     BMP3_SEL_DRDY_EN;
+  err_ = bmp3_set_sensor_settings(settings_select_, &req_settings_, &dev_);
+  if (err_ != BMP3_OK) {
     return false;
   }
   /* Get the sensor config */
-  if (bmp3_get_sensor_settings(&settings_, &dev_) != BMP3_OK) {
+  err_ = bmp3_get_sensor_settings(&settings_, &dev_);
+  if (err_ != BMP3_OK) {
     return false;
   }
   /* Set the power mode */
-  req_set_ = settings_;
-  req_set_.op_mode = BMP3_MODE_NORMAL;
-  if (bmp3_set_op_mode(&req_set_, &dev_) != BMP3_OK) {
+  req_settings_.op_mode = BMP3_MODE_NORMAL;
+  err_ = bmp3_set_op_mode(&req_settings_, &dev_);
+  if (err_ != BMP3_OK) {
     return false;
   }
   /* Get the power mode */
-  if (bmp3_get_op_mode(&pm_, &dev_) != BMP3_OK) {
+  err_ = bmp3_get_op_mode(&power_mode_, &dev_);
+  if (err_ != BMP3_OK) {
     return false;
   }
-  settings_.op_mode = pm_;
+  os_mode_ = OS_MODE_PRES_8X_TEMP_1X;
+  settings_.op_mode = power_mode_;
   return true;
 }
 
-bool Bmp3::ConfigTempOversampling(const Oversampling val) {
-  req_set_ = settings_;
-  req_set_.odr_filter.temp_os = static_cast<uint8_t>(val);
-  set_sel_ = BMP3_SEL_TEMP_OS;
-  if (bmp3_set_sensor_settings(set_sel_, &req_set_, &dev_) != BMP3_OK) {
+bool Bmp3::ConfigOsMode(const OsMode mode) {
+  switch (mode) {
+    case OS_MODE_PRES_1X_TEMP_1X: {
+      req_settings_.odr_filter.press_os = BMP3_NO_OVERSAMPLING;
+      req_settings_.odr_filter.temp_os = BMP3_NO_OVERSAMPLING;
+      req_settings_.odr_filter.odr = BMP3_ODR_200_HZ;
+      break;
+    }
+    case OS_MODE_PRES_2X_TEMP_1X: {
+      req_settings_.odr_filter.press_os = BMP3_OVERSAMPLING_2X;
+      req_settings_.odr_filter.temp_os = BMP3_NO_OVERSAMPLING;
+      req_settings_.odr_filter.odr = BMP3_ODR_100_HZ;
+      break;
+    }
+    case OS_MODE_PRES_4X_TEMP_1X: {
+      req_settings_.odr_filter.press_os = BMP3_OVERSAMPLING_4X;
+      req_settings_.odr_filter.temp_os = BMP3_NO_OVERSAMPLING;
+      req_settings_.odr_filter.odr = BMP3_ODR_50_HZ;
+      break;
+    }
+    case OS_MODE_PRES_8X_TEMP_1X: {
+      req_settings_.odr_filter.press_os = BMP3_OVERSAMPLING_8X;
+      req_settings_.odr_filter.temp_os = BMP3_NO_OVERSAMPLING;
+      req_settings_.odr_filter.odr = BMP3_ODR_50_HZ;
+      break;
+    }
+    case OS_MODE_PRES_16X_TEMP_2X: {
+      req_settings_.odr_filter.press_os = BMP3_OVERSAMPLING_16X;
+      req_settings_.odr_filter.temp_os = BMP3_OVERSAMPLING_2X;
+      req_settings_.odr_filter.odr = BMP3_ODR_25_HZ;
+      break;
+    }
+    case OS_MODE_PRES_32X_TEMP_2X: {
+      req_settings_.odr_filter.press_os = BMP3_OVERSAMPLING_32X;
+      req_settings_.odr_filter.temp_os = BMP3_OVERSAMPLING_2X;
+      req_settings_.odr_filter.odr = BMP3_ODR_12_5_HZ;
+      break;
+    }
+  }
+  settings_select_ = BMP3_SEL_PRESS_OS | BMP3_SEL_TEMP_OS | BMP3_SEL_ODR;
+  err_ = bmp3_set_sensor_settings(settings_select_, &req_settings_, &dev_);
+  if (err_ != BMP3_OK) {
     return false;
   }
   /* Get the sensor config */
-  if (bmp3_get_sensor_settings(&settings_, &dev_) != BMP3_OK) {
+  err_ = bmp3_get_sensor_settings(&settings_, &dev_);
+  if (err_ != BMP3_OK) {
     return false;
   }
-  return true;
-}
-
-bool Bmp3::ConfigPresOversampling(const Oversampling val) {
-  req_set_ = settings_;
-  req_set_.odr_filter.press_os = static_cast<uint8_t>(val);
-  set_sel_ = BMP3_SEL_PRESS_OS;
-  if (bmp3_set_sensor_settings(set_sel_, &req_set_, &dev_) != BMP3_OK) {
-    return false;
-  }
-  /* Get the sensor config */
-  if (bmp3_get_sensor_settings(&settings_, &dev_) != BMP3_OK) {
-    return false;
-  }
+  os_mode_ = mode;
   return true;
 }
 
 bool Bmp3::ConfigFilterCoef(const FilterCoef val) {
-  req_set_ = settings_;
-  req_set_.odr_filter.iir_filter = static_cast<uint8_t>(val);
-  set_sel_ = BMP3_SEL_IIR_FILTER;
-  if (bmp3_set_sensor_settings(set_sel_, &req_set_, &dev_) != BMP3_OK) {
+  req_settings_ = settings_;
+  req_settings_.odr_filter.iir_filter = static_cast<uint8_t>(val);
+  settings_select_ = BMP3_SEL_IIR_FILTER;
+  err_ = bmp3_set_sensor_settings(settings_select_, &req_settings_, &dev_);
+  if (err_ != BMP3_OK) {
     return false;
   }
   /* Get the sensor config */
-  if (bmp3_get_sensor_settings(&settings_, &dev_) != BMP3_OK) {
-    return false;
-  }
-  return true;
-}
-
-bool Bmp3::ConfigOdr(const Odr val) {
-  req_set_ = settings_;
-  req_set_.odr_filter.odr = static_cast<uint8_t>(val);
-  set_sel_ = BMP3_SEL_ODR;
-  if (bmp3_set_sensor_settings(set_sel_, &req_set_, &dev_) != BMP3_OK) {
-    return false;
-  }
-  /* Get the sensor config */
-  if (bmp3_get_sensor_settings(&settings_, &dev_) != BMP3_OK) {
+  err_ = bmp3_get_sensor_settings(&settings_, &dev_);
+  if (err_ != BMP3_OK) {
     return false;
   }
   return true;
 }
 
 bool Bmp3::Read() {
-  if (bmp3_get_status(&status_, &dev_) != BMP3_OK) {
+  err_ = bmp3_get_status(&status_, &dev_);
+  if (err_ != BMP3_OK) {
     return false;
   }
   if (status_.intr.drdy) {
-    if (bmp3_get_sensor_data(BMP3_PRESS_TEMP, &data_, &dev_) != BMP3_OK) {
+    err_ = bmp3_get_sensor_data(BMP3_PRESS_TEMP, &data_, &dev_);
+    if (err_ != BMP3_OK) {
       return false;
     }
-    if (bmp3_get_status(&status_, &dev_) != BMP3_OK) {
+    err_ = bmp3_get_status(&status_, &dev_);
+    if (err_ != BMP3_OK) {
       return false;
     }
     return true;

@@ -6,6 +6,6 @@ Lint:
   tags:
     - bfs
   script: 
-    - cpplint --verbose=0 src/bmp2.cpp
-    - cpplint --verbose=0 src/bmp2.h
+    - cpplint --verbose=0 src/bmp3.cpp
+    - cpplint --verbose=0 src/bmp3.h
   

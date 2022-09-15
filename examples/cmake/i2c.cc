@@ -25,7 +25,7 @@
 
 #include "bmp3.h"
 
-/* BMP-3xy on Wire at the primary I2C address */
+/* BMP-3xy on I2C using the primary address */
 bfs::Bmp3 bmp(&Wire, bfs::Bmp3::I2C_ADDR_PRIM);
 
 int main() {
@@ -35,18 +35,17 @@ int main() {
   /* Initialize the I2C bus */
   Wire.begin();
   Wire.setClock(400000);
-  /* Initialize the BMP-2xy */
+  /* Initialize the BMP-3xy */
   if (!bmp.Begin()) {
     Serial.println("Error initializing communication with BMP-3xy");
     while (1) {}
   }
   while (1) {
-    // if (bmp.Read()) {
-    //   Serial.print(bmp.pres_pa());
-    //   Serial.print("\t");
-    //   Serial.print(bmp.die_temp_c());
-    //   Serial.print("\n");
-    // }
-    delay(100);
+    if (bmp.Read()) {
+      Serial.print(bmp.pres_pa());
+      Serial.print("\t");
+      Serial.print(bmp.die_temp_c());
+      Serial.print("\n");
+    }
   }
 }

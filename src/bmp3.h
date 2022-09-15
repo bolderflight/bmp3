@@ -23,8 +23,8 @@
 * IN THE SOFTWARE.
 */
 
-#ifndef SRC_BMP3_H_
-#define SRC_BMP3_H_
+#ifndef BMP3_SRC_BMP3_H_  // NOLINT
+#define BMP3_SRC_BMP3_H_
 
 #if defined(ARDUINO)
 #include <Arduino.h>
@@ -33,8 +33,8 @@
 #else
 #include "core/core.h"
 #endif
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include "bst/bmp3.h"
 
 namespace bfs {
@@ -45,21 +45,14 @@ class Bmp3 {
     I2C_ADDR_PRIM = BMP3_ADDR_I2C_PRIM,
     I2C_ADDR_SEC = BMP3_ADDR_I2C_SEC
   };
-  enum Oversampling : uint8_t {
-    OVERSAMPLING_1X = BMP3_NO_OVERSAMPLING,
-    OVERSAMPLING_2X = BMP3_OVERSAMPLING_2X,
-    OVERSAMPLING_4X = BMP3_OVERSAMPLING_4X,
-    OVERSAMPLING_8X = BMP3_OVERSAMPLING_8X,
-    OVERSAMPLING_16X = BMP3_OVERSAMPLING_16X,
-    OVERSAMPLING_32X = BMP3_OVERSAMPLING_32X
+  enum OsMode : uint8_t {
+    OS_MODE_PRES_1X_TEMP_1X,
+    OS_MODE_PRES_2X_TEMP_1X,
+    OS_MODE_PRES_4X_TEMP_1X,
+    OS_MODE_PRES_8X_TEMP_1X,
+    OS_MODE_PRES_16X_TEMP_2X,
+    OS_MODE_PRES_32X_TEMP_2X
   };
-  // enum OversamplingMode : uint8_t {
-  //   OS_MODE_ULTRA_LOW_POWER = BMP2_OS_MODE_ULTRA_LOW_POWER,
-  //   OS_MODE_LOW_POWER = BMP2_OS_MODE_LOW_POWER,
-  //   OS_MODE_STANDARD_RESOLUTION = BMP2_OS_MODE_STANDARD_RESOLUTION,
-  //   OS_MODE_HIGH_RESOLUTION = BMP2_OS_MODE_HIGH_RESOLUTION,
-  //   OS_MODE_ULTRA_HIGH_RESOLUTION = BMP2_OS_MODE_ULTRA_HIGH_RESOLUTION
-  // };
   enum FilterCoef : uint8_t {
     FILTER_COEF_OFF = BMP3_IIR_FILTER_DISABLE,
     FILTER_COEF_2 = BMP3_IIR_FILTER_COEFF_1,
@@ -70,59 +63,33 @@ class Bmp3 {
     FILTER_COEF_64 = BMP3_IIR_FILTER_COEFF_63,
     FILTER_COEF_128 = BMP3_IIR_FILTER_COEFF_127,
   };
-  enum Odr : uint8_t {
-    ODR_200_HZ = BMP3_ODR_200_HZ,
-    ODR_100_HZ = BMP3_ODR_100_HZ,
-    ODR_50_HZ = BMP3_ODR_50_HZ,
-    ODR_25_HZ = BMP3_ODR_25_HZ,
-    ODR_12_5_HZ = BMP3_ODR_12_5_HZ,
-    ODR_6_25_HZ = BMP3_ODR_6_25_HZ,
-    ODR_3_1_HZ = BMP3_ODR_3_1_HZ,
-    ODR_1_5_HZ = BMP3_ODR_1_5_HZ,
-    ODR_0_78_HZ = BMP3_ODR_0_78_HZ,
-    ODR_0_39_HZ = BMP3_ODR_0_39_HZ,
-    ODR_0_2_HZ = BMP3_ODR_0_2_HZ,
-    ODR_0_1_HZ = BMP3_ODR_0_1_HZ,
-    ODR_0_05_HZ = BMP3_ODR_0_05_HZ,
-    ODR_0_02_HZ = BMP3_ODR_0_02_HZ,
-    ODR_0_01_HZ = BMP3_ODR_0_01_HZ,
-    ODR_0_006_HZ = BMP3_ODR_0_006_HZ,
-    ODR_0_003_HZ = BMP3_ODR_0_003_HZ,
-    ODR_0_001_HZ = BMP3_ODR_0_001_HZ
-  };
   Bmp3(TwoWire *i2c, const I2cAddr addr);
   Bmp3(SPIClass *spi, const uint8_t cs);
   bool Begin();
-  bool ConfigTempOversampling(const Oversampling val);
-  inline Oversampling temp_oversampling() const {
-    return static_cast<Oversampling>(settings_.odr_filter.temp_os);
-  }
-  bool ConfigPresOversampling(const Oversampling val);
-  inline Oversampling pres_oversampling() const {
-    return static_cast<Oversampling>(settings_.odr_filter.press_os);
-  }
+  bool ConfigOsMode(const OsMode mode);
+  inline OsMode os_mode() const {return os_mode_;}
   bool ConfigFilterCoef(const FilterCoef val);
   inline FilterCoef filter_coef() const {
     return static_cast<FilterCoef>(settings_.odr_filter.iir_filter);
-  }
-  bool ConfigOdr(const Odr val);
-  inline Odr odr() const {
-    return static_cast<Odr>(settings_.odr_filter.odr);
   }
   bool Read();
   inline bool Reset() {return (bmp3_soft_reset(&dev_) == BMP3_OK);}
   inline double pres_pa() const {return data_.pressure;}
   inline double die_temp_c() const {return data_.temperature;}
+  inline int8_t error_code() const {return err_;}
 
  private:
+  /* Error codes */
+  int8_t err_;
   /* BMP3 device settings */
   bmp3_dev dev_;
   /* BMP3 data */
   bmp3_data data_;
   /* BMP2 config */
-  uint8_t pm_;
-  uint32_t set_sel_;
-  bmp3_settings req_set_, settings_;
+  OsMode os_mode_;
+  uint8_t power_mode_;
+  uint32_t settings_select_;
+  bmp3_settings req_settings_, settings_;
   bmp3_status status_;
   /* Description of I2C and SPI interfaces */
   struct I2cIntf {
@@ -150,4 +117,4 @@ class Bmp3 {
 
 }  // namespace bfs
 
-#endif  // SRC_BMP2_H_
+#endif  // BMP3_SRC_BMP3_H_ NOLINT
