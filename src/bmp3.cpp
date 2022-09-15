@@ -69,7 +69,7 @@ bool Bmp3::Begin() {
   req_settings_.odr_filter.press_os = BMP3_OVERSAMPLING_8X;
   req_settings_.odr_filter.temp_os = BMP3_NO_OVERSAMPLING;
   req_settings_.odr_filter.odr = BMP3_ODR_50_HZ;
-  req_settings_.odr_filter.iir_filter = BMP3_IIR_FILTER_COEFF_2;
+  req_settings_.odr_filter.iir_filter = BMP3_IIR_FILTER_COEFF_1;
   req_settings_.int_settings.drdy_en = BMP3_ENABLE;
   req_settings_.int_settings.latch = BMP3_INT_PIN_NON_LATCH;
   req_settings_.int_settings.level = BMP3_INT_PIN_ACTIVE_HIGH;
