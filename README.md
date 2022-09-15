@@ -1,93 +1,240 @@
-# bmp3
+[![Pipeline](https://gitlab.com/bolderflight/software/bme280/badges/main/pipeline.svg)](https://gitlab.com/bolderflight/software/bme280/) [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-Sensor driver for Bosch BMP-3xy sensors
+![Bolder Flight Systems Logo](img/logo-words_75.png) &nbsp; &nbsp; ![Arduino Logo](img/arduino_logo_75.png)
 
-## Getting started
+# Bme280
+This library communicates with the [BME280](https://www.bosch-sensortec.com/products/environmental-sensors/humidity-sensors-bme280/) environmental sensor and is compatible with Arduino and CMake build systems.
+   * [License](LICENSE.md)
+   * [Changelog](CHANGELOG.md)
+   * [Contributing guide](CONTRIBUTING.md)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+# Description
+The Bosch Sensortec [BME280](https://www.bosch-sensortec.com/bst/products/all_products/bme280) is an integrated environmental sensor, which combines high linearity, high accuracy sensors for pressure, temperature, and humidity in a compact LGA package. The pressure sensor is an absolute barometric pressure sensor with features exceptionally high accuracy and resolution at very low noise. The integrated temperature sensor has been optimized for very low noise and high resolution. Pressure, temperature, and humidity measurements can be useful for applications involving unmanned vehicles (indicated and true airspeed, altitude, and density altitude), indoor navigation (floor detection), outdoor navigation (altitudes and airspeeds, dead-reckoning, GPS time to first fix improvements) as well as weather monitoring and home automation.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+The [BME280](https://www.bosch-sensortec.com/bst/products/all_products/bme280) samples pressure and temperature to 20 bit resolution and humidity to 16 bit resolution. The [BME280](https://www.bosch-sensortec.com/bst/products/all_products/bme280) features programmable oversampling, filtering, and standby time between samples. The BME280 supports both I2C and SPI communication.
 
-## Add your files
+# Usage
+This library supports both I2C and SPI commmunication with the BME280 and supports collecting pressure, temperature, and humidity data. The BME280 temperature data should be treated as die temperature, and is labled as such within this library.
 
-- [ ] [Create](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+# Installation
+
+## Arduino
+Simply clone or download this library into your Arduino/libraries folder. The library is added as:
+
+```C++
+#include "bme280.h"
+```
+
+Example Arduino executables are located in: *examples/arduino/*, see the Examples list for a complete listing and description. Teensy 3.x, 4.x, and LC devices are used for testing under Arduino and this library should be compatible with other Arduino devices.
+
+## CMake
+CMake is used to build this library, which is exported as a library target called *bme280*. The header is added as:
+
+```C++
+#include "bme280.h"
+```
+
+The library can be also be compiled stand-alone using the CMake idiom of creating a *build* directory and then, from within that directory issuing:
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/bolderflight/software/bmp3.git
-git branch -M main
-git push -uf origin main
+cmake .. -DMCU=MK66FX1M0
+make
 ```
 
-## Integrate with your tools
+This will build the library and example executables called *i2c_example* and *spi_example*. The example executable source files are located at *examples/cmake/i2c.cc* and *examples/cmake/spi.cc*. Notice that the *cmake* command includes a define specifying the microcontroller the code is being compiled for. This is required to correctly configure the code, CPU frequency, and compile/linker options. The available MCUs are:
+   * MK20DX128
+   * MK20DX256
+   * MK64FX512
+   * MK66FX1M0
+   * MKL26Z64
+   * IMXRT1062_T40
+   * IMXRT1062_T41
 
-- [ ] [Set up project integrations](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://gitlab.com/bolderflight/software/bmp3/-/settings/integrations)
+These are known to work with the same packages used in Teensy products. Also switching packages is known to work well, as long as it's only a package change.
 
-## Collaborate with your team
+The example targets create executables for communicating with the sensor using I2C or SPI communication. Each target also has a *_hex*, for creating the hex file to upload to the microcontroller, and an *_upload* for using the [Teensy CLI Uploader](https://www.pjrc.com/teensy/loader_cli.html) to flash the Teensy. Please note that the CMake build tooling is expected to be run under Linux or WSL, instructions for setting up your build environment can be found in our [build-tools repo](https://github.com/bolderflight/build-tools).
 
-- [ ] [Invite team members and collaborators](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+# Namespace
+This library is within the namespace *bfs*.
 
-## Test and Deploy
+# Bme280
 
-Use the built-in continuous integration in GitLab.
+## Methods
 
-- [ ] [Get started with GitLab CI/CD](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+**Bme280(TwoWire &ast;i2c, const I2cAddr addr)** Creates a Bme280 object. This constructor is used for the I2C communication interface. A pointer to the I2C bus object is passed along with an enum of the I2C address of the sensor. Use I2C_ADDR_PRIM if the SDO pin is grounded and I2C_ADDR_SEC if the SDO pin is pulled high.
 
-***
+```C++
+bfs::Bme280 bme280(&Wire, bfs::Bme280::I2C_ADDR_PRIM);
+```
 
-# Editing this README
+**Bme280(SPIClass *spi, const uint8_t cs)** Creates a Bme280 object. This constructor is used for the SPI communication interface. A pointer to the SPI bus object is passed along with the chip select pin of the sensor. Any pin capable of digital I/O can be used as a chip select pin.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!).  Thank you to [makeareadme.com](https://gitlab.com/-/experiment/new_project_readme_content:599375f41b0a216ad76f853afd568f39?https://www.makeareadme.com/) for this template.
+```C++
+bfs::Bme280 bme280(&SPI, 2);
+```
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+**bool Begin()** Initializes communication with the sensor and configures the default sampling rates, oversampling and low pass filter settings. True is returned if communication is able to be established with the sensor and configuration completes successfully, otherwise, false is returned. The communication bus is not initialized within this library and must be initialized seperately; this enhances compatibility with other sensors that may on the same bus.
 
-## Name
-Choose a self-explaining name for your project.
+```C++
+Wire.begin();
+Wire.setClock(400000);
+bool status = bme280.Begin();
+if (!status) {
+  // ERROR
+}
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+The BME280 features programmable oversampling, filtering, and standby time between samples. By default, these are set to the following values:
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+| Settings        |                                |
+| ---             | ---                            |
+| Oversampling    | pressure x 16, temperature x 2, humidity x 1 |
+| IIR Filter Coefficient | 16                             |
+| Standby Time    | 0.5 ms                         |
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+| Performance      |         |
+| ---              | ---     |
+| Data Output Rate | 25 Hz   |
+| Filter Bandwidth | 0.53 Hz |
+| Response Time    | 0.88 s  |
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Optionally, the *ConfigPresOversampling*, *ConfigTempOversampling*, *ConfigHumidityOversampling*, *ConfigFilterCoef* and *ConfigStandbyTime* functions can be used, following *Begin*, to change these settings from their default values. For much more information on the settings and performance implications, please refer to the [BME280 datasheet](docs/BME280-Datasheet.pdf).
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+**bool ConfigTempOversampling(const Oversampling oversampling)** Sets the temperature oversampling value. The following enumerated oversampling settings are supported:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+| Oversampling Name | Oversampling Value |
+| ---               | ---                |
+| OVERSAMPLING_1X    | 1                  |
+| OVERSAMPLING_2X    | 2                  |
+| OVERSAMPLING_4X    | 4                  |
+| OVERSAMPLING_8X    | 8                  |
+| OVERSAMPLING_16X   | 16                 |
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+True is returned on successfully updating the BME280 configuration, otherwise false is returned.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+```C++
+bool status = bme280.ConfigTempOversampling(bfs::Bme280::OVERSAMPLING_16X);
+if (!status) {
+  // ERROR
+}
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+**Oversampling temp_oversampling()** Returns the current temperature oversampling value.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+**bool ConfigPresOversampling(const Oversampling oversampling)** Sets the pressure oversampling value. The use of this function is identical to *ConfigTempOversampling*.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+**Oversampling pres_oversampling()** Returns the current pressure oversampling value.
 
-## License
-For open source projects, say how it is licensed.
+**bool ConfigHumidityOversampling(const Oversampling oversampling)** Sets the humidity oversampling value. The use of this function is identical to *ConfigTempOversampling*.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+**Oversampling humidity_oversampling()** Returns the current humidity oversampling value.
 
+**bool ConfigFilterCoef(const FilterCoef val)** Sets the digital low pass filter IIR coefficient. This filter is applied to all measurements. The filter is given by the following equation:
+
+*data_filtered = (data_filtered_old &ast; (filter_coefficient - 1) + data) / filter_coefficient*
+
+The following enumerated filter coefficients are supported:
+
+| Filter Coefficient Name     | Filter Coefficient Value     | Samples to reach 75% of step response |
+| ---                         | ---                          | ---                                   |
+| FILTER_COEF_OFF             | 1                            | 1                                     |
+| FILTER_COEF_2               | 2                            | 2                                     |
+| FILTER_COEF_4               | 4                            | 5                                     |
+| FILTER_COEF_8               | 8                            | 11                                    |
+| FILTER_COEF_16              | 16                           | 22                                    |
+
+True is returned on successfully updating the BME280 configuration, otherwise false is returned.
+
+```C++
+bool status = bme280.ConfigFilterCoef(bfs::Bme280::FILTER_COEF_16);
+if (!status) {
+  // ERROR
+}
+```
+
+**FilterCoef filter_coef()** Returns the current filter coefficient value.
+
+**bool ConfigStandbyTime(const StandbyTime standby)** Sets the standby time, which is applied to all measurements. This is the time that the sensor spends idle between taking measurements. 
+
+The following enumerated standby times are supported:
+
+| Standby Time Name | Standby Time  |
+| ---               | ---           |
+| STANDBY_TIME_0_5_MS    | 0.5 ms        |
+| STANDBY_TIME_10_MS     | 10 ms         |
+| STANDBY_TIME_20_MS     | 20 ms         |
+| STANDBY_TIME_62_5_MS   | 62.5 ms       |
+| STANDBY_TIME_125_MS    | 125 ms        |
+| STANDBY_TIME_250_MS    | 250 ms        |
+| STANDBY_TIME_500_MS    | 500 ms        |
+| STANDBY_TIME_1000_MS   | 1000 ms       |
+
+True is returned on successfully updating the BME280 configuration, otherwise false is returned.
+
+```C++
+bool status = bme280.ConfigStandbyTime(bfs::Bme280::STANDBY_TIME_0_5_MS);
+if (!status) {
+  // ERROR
+}
+```
+
+**StandbyTime standby_time()** Returns the current standby time value.
+
+**bool Reset()** Performs a soft reset of the BME280. True is returned on success.
+
+**bool Read()** Reads data from the BME280 and stores the data in the Bme280 object. Returns true if data is successfully read, otherwise, returns false.
+
+```C++
+/* Read the sensor data */
+if (bme280.Read()) {
+}
+```
+
+**float pres_pa()** Returns the pressure data from the Bme280 object in units of Pa.
+
+```C++
+float pressure = bme280.pres_pa();
+```
+
+**float die_temp_c** Returns the die temperature of the sensor from the Bme280 object in units of degrees C.
+
+```C++
+float temperature = bme280.die_temp_c();
+```
+
+**float humidity_rh** Returns the humidity from the Bme280 object in units of %RH.
+
+```C++
+float temperature = bme280.humidity_rh();
+```
+
+## Example List
+* **i2c**: demonstrates declaring a *Bme280* object, initializing the sensor, and collecting data. I2C is used to communicate with the BME-280 sensor.
+* **spi**: demonstrates declaring a *Bme280* object, initializing the sensor, and collecting data. SPI is used to communicate with the BME-280 sensor.
+
+# Wiring and Pullups 
+Please refer to the [BME280 datasheet](docs/BME280-Datasheet.pdf) and your microcontroller's pinout diagram. This library was developed using the [Adafruit Breakout Board](https://www.adafruit.com/products/2652). This library should work well for other breakout boards or embedded sensors, please refer to your vendor's pinout diagram.
+
+## I2C
+
+The BME280 pins should be connected as:
+   * VDD: this should be a 1.7V to 3.6V power source. The Adafruit breakout includes voltage regulation enabling a 3-5V range.
+   * GND: ground.
+   * VDDIO: digital I/O supply voltage. This should be between 1.2V and 3.6V. The Adafruit breakout board connects VDDIO so this is not broken out to a pin.
+   * SDI: connect to SDA.
+   * SCK: connect to SCL.
+   * SDO: ground to select I2C address 0x76. Pull high to VDD to select I2C address 0x77.
+   * CSB: connect to VDD.
+
+2.2 kOhm resistors should be used as pullups on SDA and SCL, these resistors should pullup with a 3.3V source.
+
+## SPI
+
+The BME280 pins should be connected as:
+   * VDD: this should be a 1.7V to 3.6V power source. The Adafruit breakout includes voltage regulation enabling a 3-5V range.
+   * GND: ground.
+   * VDDIO: digital I/O supply voltage. This should be between 1.2V and 3.6V. The Adafruit breakout board connects VDDIO so this is not broken out to a pin.
+   * SDI: connect to MOSI.
+   * SCK: connect to SCK.
+   * SDO: connect to MISO.
+   * CSB: connect to chip select pin. Pin 10 was used in the code snippets in this document and the included examples, but any digital I/O pin can be used.
