@@ -57,6 +57,27 @@ Bmp3::Bmp3(SPIClass *spi, const uint8_t cs) {
   dev_.delay_us = Delay_us;
 }
 
+void Bmp3::Config(TwoWire *i2c, const I2cAddr addr) {
+  i2c_intf_.i2c = i2c;
+  i2c_intf_.addr = static_cast<uint8_t>(addr);
+  dev_.intf_ptr = &i2c_intf_;
+  dev_.intf = BMP3_I2C_INTF;
+  dev_.read = I2cReadRegisters;
+  dev_.write = I2cWriteRegisters;
+  dev_.delay_us = Delay_us;
+}
+
+void Bmp3::Config(SPIClass *spi, const uint8_t cs) {
+  pinMode(cs, OUTPUT);
+  spi_intf_.spi = spi;
+  spi_intf_.cs = cs;
+  dev_.intf_ptr = &spi_intf_;
+  dev_.intf = BMP3_SPI_INTF;
+  dev_.read = SpiReadRegisters;
+  dev_.write = SpiWriteRegisters;
+  dev_.delay_us = Delay_us;
+}
+
 bool Bmp3::Begin() {
   /* Initialize communication */
   err_ = bmp3_init(&dev_);

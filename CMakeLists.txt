@@ -12,7 +12,7 @@ if (DEFINED MCU)
   set(CMAKE_TOOLCHAIN_FILE "${mcu_support_SOURCE_DIR}/cmake/cortex.cmake")
   # Project information
   project(Bmp3
-    VERSION 1.0.1
+    VERSION 1.1.0
     DESCRIPTION "BMP-3xy sensor driver"
     LANGUAGES C CXX
   )
@@ -26,10 +26,19 @@ if (DEFINED MCU)
     GIT_TAG v3.1.0
   )
   FetchContent_MakeAvailable(core)
+  # Fetch types
+  FetchContent_Declare(
+    types
+    GIT_REPOSITORY https://github.com/bolderflight/types.git
+    GIT_TAG v0.6.0
+  )
+  FetchContent_MakeAvailable(types)
   # Add the library target
   add_library(bmp3
     src/bmp3.cpp
     src/bmp3.h
+    src/bfs-bmp3.cpp
+    src/bfs-bmp3.h
     src/bst/bmp3_defs.h
     src/bst/bmp3.h
     src/bst/bmp3.c
@@ -38,6 +47,7 @@ if (DEFINED MCU)
   target_link_libraries(bmp3
     PUBLIC
       core
+      types
   )
   # Setup include directories 
   target_include_directories(bmp3 PUBLIC 

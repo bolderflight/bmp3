@@ -63,8 +63,11 @@ class Bmp3 {
     FILTER_COEF_64 = BMP3_IIR_FILTER_COEFF_63,
     FILTER_COEF_128 = BMP3_IIR_FILTER_COEFF_127,
   };
+  Bmp3() {}
   Bmp3(TwoWire *i2c, const I2cAddr addr);
   Bmp3(SPIClass *spi, const uint8_t cs);
+  void Config(TwoWire *i2c, const I2cAddr addr);
+  void Config(SPIClass *spi, const uint8_t cs);
   bool Begin();
   bool ConfigOsMode(const OsMode mode);
   inline OsMode os_mode() const {return os_mode_;}
