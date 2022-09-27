@@ -29,10 +29,10 @@
 #include "Wire.h"
 #include "SPI.h"
 #else
-#include "core/core.h"
-#endif
 #include <cstddef>
 #include <cstdint>
+#include "core/core.h"
+#endif
 
 namespace bfs {
 
