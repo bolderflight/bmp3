@@ -28,3 +28,4 @@ Reset	KEYWORD2
 pres_pa	KEYWORD2
 die_temp_c	KEYWORD2
 error_code	KEYWORD2
+Config	KEYWORD2
