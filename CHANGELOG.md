@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.0
+- Added a default constructor
+
 ## v1.0.1
 - Typo in Begin method
 
