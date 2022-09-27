@@ -31,10 +31,10 @@
 #include "Wire.h"
 #include "SPI.h"
 #else
-#include "core/core.h"
-#endif
 #include <cstddef>
 #include <cstdint>
+#include "core/core.h"
+#endif
 #include "bst/bmp3.h"
 
 namespace bfs {

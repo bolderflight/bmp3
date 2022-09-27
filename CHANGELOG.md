@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.1
+- Fixed includes to support Arduino AVR
+
 ## v1.1.0
 - Added a default constructor
 
