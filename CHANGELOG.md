@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.2
+- Moved pinMode to Begin method
+
 ## v1.1.1
 - Fixed includes to support Arduino AVR
 

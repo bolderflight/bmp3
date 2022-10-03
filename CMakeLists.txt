@@ -12,7 +12,7 @@ if (DEFINED MCU)
   set(CMAKE_TOOLCHAIN_FILE "${mcu_support_SOURCE_DIR}/cmake/cortex.cmake")
   # Project information
   project(Bmp3
-    VERSION 1.1.1
+    VERSION 1.1.2
     DESCRIPTION "BMP-3xy sensor driver"
     LANGUAGES C CXX
   )

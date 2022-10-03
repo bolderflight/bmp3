@@ -47,7 +47,6 @@ Bmp3::Bmp3(TwoWire *i2c, const I2cAddr addr) {
 }
 
 Bmp3::Bmp3(SPIClass *spi, const uint8_t cs) {
-  pinMode(cs, OUTPUT);
   spi_intf_.spi = spi;
   spi_intf_.cs = cs;
   dev_.intf_ptr = &spi_intf_;
@@ -68,7 +67,6 @@ void Bmp3::Config(TwoWire *i2c, const I2cAddr addr) {
 }
 
 void Bmp3::Config(SPIClass *spi, const uint8_t cs) {
-  pinMode(cs, OUTPUT);
   spi_intf_.spi = spi;
   spi_intf_.cs = cs;
   dev_.intf_ptr = &spi_intf_;
@@ -79,6 +77,9 @@ void Bmp3::Config(SPIClass *spi, const uint8_t cs) {
 }
 
 bool Bmp3::Begin() {
+  if (dev_.intf == BMP3_SPI_INTF) {
+    pinMode(spi_intf_.cs, OUTPUT);
+  }
   /* Initialize communication */
   err_ = bmp3_init(&dev_);
   if (err_ != BMP3_OK) {
