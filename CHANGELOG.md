@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.3
+- Updated core to support MMOD
+
 ## v1.1.2
 - Moved pinMode to Begin method
 
